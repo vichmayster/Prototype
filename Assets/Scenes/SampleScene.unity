@@ -2094,6 +2094,8 @@ GameObject:
   - component: {fileID: 1414511808}
   - component: {fileID: 1414511807}
   - component: {fileID: 1414511806}
+  - component: {fileID: 1414511810}
+  - component: {fileID: 1414511811}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -2113,16 +2115,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47ad490c390469d4a9d5d03d6fd744a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dodgeDuration: 0.3
   jumpForce: 25
   dodgeForce: {x: 10, y: 10}
   distanceToGround: 1.4
   ground:
     serializedVersion: 2
     m_Bits: 8
-  attackDistance: 3
   charecterProperties: {fileID: 11400000, guid: b2bfd4bcd4cb1134abc76599d77224ea, type: 2}
   wallJumpDuration: 0.6
   wallJunpForce: {x: 8, y: 25}
+  wallDistance: 0.5
 --- !u!70 &1414511807
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -2201,6 +2204,46 @@ Transform:
   - {fileID: 1966447806}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1414511810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414511805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4395be9614604564badea08db0409915, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isAvailbleWeapon2: 1
+  isAvailbleWeapon3: 1
+  damege: 10
+  resetGotHitDuration: 0.5
+  attackDistance: 3.4
+  attackDuration: 0.4
+  charecterProperties: {fileID: 11400000, guid: b2bfd4bcd4cb1134abc76599d77224ea, type: 2}
+--- !u!114 &1414511811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414511805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b59bdf0be65d3224d8ee32fcffe71979, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerLevel: 1
+  level2Required: 100
+  level3Required: 200
+  skeletonPoints: 150
+  musroomPoints: 20
+  eyePoints: 20
+  level1: {fileID: 11400000, guid: afe804acf993e334baa9a89d0142c03d, type: 2}
+  level2: {fileID: 11400000, guid: 6d6b14cae967006448c34724b4211408, type: 2}
+  level3: {fileID: 11400000, guid: 949c38b8e5895074a8b4235ec9d61a28, type: 2}
 --- !u!1 &1445130027
 GameObject:
   m_ObjectHideFlags: 0

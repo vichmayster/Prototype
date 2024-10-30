@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
 
@@ -8,13 +9,15 @@ public class EnemyScript : MonoBehaviour
     public delegate void EnemyAttack();
     public static event EnemyAttack hitThePlayer;
 
+    public delegate void LevelPoints();
+    public static event LevelPoints skeletonPoints;
+
 
     Animator animator;
     int speed;
     int hp;
     int randomNumber;
     int facingDirection = 1;
-    int detectionRang = 10;
     bool gotHit;
     bool missed;
     bool dead;
@@ -26,6 +29,11 @@ public class EnemyScript : MonoBehaviour
     bool canAttack = true;
     bool inRange = false;
     bool inPlayersRange = false;
+
+    bool vulnerable;
+    bool vulnerableLeft;
+    bool vulnerableRight;
+
     CapsuleCollider2D capsuleCollider;
 
     [SerializeField] int attackDistance;
@@ -36,7 +44,15 @@ public class EnemyScript : MonoBehaviour
     int hit_damage;
     int hit_damage_w2;
 
-    
+    [Header("Player Enemy Interactions")]
+    [SerializeField] int detectionRang = 10;
+
+    [Header("Object Destruction Duration")]
+    [SerializeField] int objectDestructionDuration = 10;
+
+    [Header("Reset Attack Duration")]
+    [SerializeField] float resetAttackDuration = 0.4f;
+
     Rigidbody2D rb;
 
     [Header("ScriptableObjects")]
@@ -52,42 +68,78 @@ public class EnemyScript : MonoBehaviour
         StartCoroutine(SwitchSide());
 
         //outside source
-        success_hit = 30;
-        success_hit_w2 = 80;
-        hit_damage = 25;
-        hit_damage_w2 = 100;
+        success_hit = LevelSystemScript.skeletonSuccessHitW1;
+        success_hit_w2 = LevelSystemScript.skeletonSuccessHitW2;
+        hit_damage = LevelSystemScript.skeletonHitDamageW1;
+        hit_damage_w2 = LevelSystemScript.skeletonHitDamageW2;
     }
     void Update()
     {
+        HandleAnimations();
+        HandleAttack();
+    }
+
+    private void FixedUpdate()
+    {
         HandleMovement();
         HandlePlayerAttack();
-        HandleAnimations();
         HandlePlayerDetection();
-        HandleAttack();
+        
     }
 
     private void HandlePlayerAttack()
     {
-        if (inRange && !inPlayersRange)
+        if (vulnerable && !inPlayersRange)
         {
-            PlayerMovment.HitTheEnemy -= HandleAttacked;
-            PlayerMovment.HitTheEnemy += HandleAttacked;
+            PlayerCombatScript.HitTheEnemy -= HandleAttacked;
+            PlayerCombatScript.HitTheEnemy += HandleAttacked;
 
-            PlayerMovment.HitTheEnemy2 -= HandleAttacked2;
-            PlayerMovment.HitTheEnemy2 += HandleAttacked2;
+            PlayerCombatScript.HitTheEnemy2 -= HandleAttacked2;
+            PlayerCombatScript.HitTheEnemy2 += HandleAttacked2;
 
             inPlayersRange = true;
         }
-        else if (!inRange && inPlayersRange)
+        else if (!vulnerable && inPlayersRange)
         {
-            PlayerMovment.HitTheEnemy -= HandleAttacked;
+            PlayerCombatScript.HitTheEnemy -= HandleAttacked;
 
-            PlayerMovment.HitTheEnemy2 -= HandleAttacked2;
+            PlayerCombatScript.HitTheEnemy2 -= HandleAttacked2;
 
             inPlayersRange = false;
         }
         else
             return;
+    }
+    private void HandleAttacked()
+    {
+        if (Random.Range(1,101) < success_hit)
+        {
+            gotHit = true;
+            StartCoroutine(Freez(1));
+            hp -= hit_damage;
+            if (hp < 0)
+            {
+                dead = true;
+                PlayerCombatScript.HitTheEnemy -= HandleAttacked;
+                InvokeLevelPoints();
+                StartCoroutine(EnemyDeath());
+            }
+        }
+        else 
+            missed = true;
+            StartCoroutine(Freez(1));
+
+        StartCoroutine(ResetAttacked());
+    }
+
+    private void InvokeLevelPoints()
+    {
+        Debug.Log("before Invoke Level Points");
+        if (skeletonPoints != null)
+        {
+            Debug.Log("Send Invoke Level Points");
+            skeletonPoints.Invoke();
+        }
     }
 
     private void HandleAttacked2()
@@ -97,10 +149,11 @@ public class EnemyScript : MonoBehaviour
             gotHit = true;
             StartCoroutine(Freez(1));
             hp -=hit_damage_w2;
-            if (hp < 0)
+            if (hp < 1)
             {
                 dead = true;
-                PlayerMovment.HitTheEnemy -= HandleAttacked;
+                PlayerCombatScript.HitTheEnemy -= HandleAttacked;
+                InvokeLevelPoints();
                 StartCoroutine(EnemyDeath());
             }
         }
@@ -137,9 +190,12 @@ public class EnemyScript : MonoBehaviour
             //Debug.Log("Player attacked " + attack);
         }
 
-
         if (playerSpotted)
             alert = true;
+
+        vulnerableLeft = Physics2D.Raycast(transform.position, Vector2.left, attackDistance, LayerMask.GetMask("Player"));
+        vulnerableRight = Physics2D.Raycast(transform.position, Vector2.right, attackDistance, LayerMask.GetMask("Player"));
+        vulnerable = vulnerableLeft || vulnerableRight;
     }
 
     private void HandleAttack()
@@ -188,26 +244,6 @@ public class EnemyScript : MonoBehaviour
 
 
 
-    void HandleAttacked()
-    {
-        if (Random.Range(1,101) < success_hit)
-        {
-            gotHit = true;
-            StartCoroutine(Freez(1));
-            hp -= hit_damage;
-            if (hp < 0)
-            {
-                dead = true;
-                PlayerMovment.HitTheEnemy -= HandleAttacked;
-                StartCoroutine(EnemyDeath());
-            }
-        }
-        else 
-            missed = true;
-            StartCoroutine(Freez(1));
-
-        StartCoroutine(ResetAttacked());
-    }
 
 
     private void HandleAnimations()
@@ -241,7 +277,7 @@ public class EnemyScript : MonoBehaviour
 
     private IEnumerator ResetAttacked()
     {
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(resetAttackDuration);
         gotHit = false;
         missed = false;
     }
@@ -255,7 +291,7 @@ public class EnemyScript : MonoBehaviour
             rb.gravityScale = 0;
             rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(objectDestructionDuration);
         Destroy(gameObject);
     }
 

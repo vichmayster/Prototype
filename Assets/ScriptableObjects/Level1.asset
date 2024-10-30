@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd884b55eafe1e49b050e4a101f1898, type: 3}
+  m_Name: Level1
+  m_EditorClassIdentifier: 
+  skeletonSuccessHitW1: 30
+  skeletonSuccessHitW2: 80
+  skeletonSuccessHitW3: 0
+  skeletonHitDamageW1: 25
+  skeletonHitDamageW2: 100
+  skeletonHitDamageW3: 0
+  mushroomSuccessHitW1: 40
+  mushroomSuccessHitW2: 80
+  mushroomSuccessHitW3: 30
+  mushroomHitDamageW1: 20
+  mushroomHitDamageW2: 5
+  mushroomHitDamageW3: 10
+  eyeSuccessHitW1: 5
+  eyeSuccessHitW2: 0
+  eyeSuccessHitW3: 50
+  eyeHitDamageW1: 100
+  eyeHitDamageW2: 0
+  eyeHitDamageW3: 20
