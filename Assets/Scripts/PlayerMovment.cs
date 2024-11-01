@@ -17,6 +17,9 @@ public class PlayerMovment : MonoBehaviour
     float input;
     static bool directionRight = true;
 
+    float horizontalVelocity;
+    float velocityThreshold;
+
     [Header("Dodging")]
     bool isDodging = false;
     [SerializeField] private float dodgeDuration = 0.3f;
@@ -179,6 +182,8 @@ public class PlayerMovment : MonoBehaviour
             return;
 
         rb.velocity = new Vector2(input * speed, rb.velocity.y);
+        horizontalVelocity = Mathf.Abs(rb.velocity.x);
+        velocityThreshold = 0.01f;
     }
 
     private void HandleFlip()
@@ -197,7 +202,7 @@ public class PlayerMovment : MonoBehaviour
     }
     private void HandleAnimations()
     {
-        animator.SetBool("isMoving", rb.velocity.x != 0);
+        animator.SetBool("isMoving", horizontalVelocity > velocityThreshold);
         animator.SetFloat("yVelocity", rb.velocity.y);
         animator.SetBool("isGrounded", isGrounded);
        

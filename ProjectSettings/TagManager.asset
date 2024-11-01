@@ -47,17 +47,14 @@ TagManager:
     uniqueID: 0
     locked: 0
   - name: Background
-    uniqueID: 1042568001
+    uniqueID: 966504331
+    locked: 0
+  - name: wall
+    uniqueID: 2845408249
     locked: 0
   - name: Ground
-    uniqueID: 4014047639
+    uniqueID: 922894445
     locked: 0
-  - name: fruets
-    uniqueID: 3663337951
-    locked: 0
-  - name: Enemy
-    uniqueID: 2733040963
-    locked: 0
-  - name: Player
-    uniqueID: 3320454357
+  - name: Text
+    uniqueID: 397547035
     locked: 0
