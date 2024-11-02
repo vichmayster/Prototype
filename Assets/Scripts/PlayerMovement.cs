@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-
-public class PlayerMovment : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    
     public delegate void EnemySpawner();
     public static event EnemySpawner enemySpawn;
 
+    // Add death event for state management
+    public event System.Action OnPlayerDeath;
+
     Animator animator;
     Rigidbody2D rb;
-
     float input;
     static bool directionRight = true;
 
     [Header("Dodging")]
     bool isDodging = false;
     [SerializeField] private float dodgeDuration = 0.3f;
-
     static int facingDiraction = 1;
-   
+
+    [Header("Health")]
+    public int hp = 100;
+    bool isDead = false;
 
     [Header("Movment")]
     [SerializeField] int jumpForce;
@@ -35,7 +35,6 @@ public class PlayerMovment : MonoBehaviour
     bool isGrounded;
     bool onTarget;
 
-
     [Header("ScriptableObjects")]
     [SerializeField] CharecterProperties charecterProperties;
 
@@ -46,31 +45,6 @@ public class PlayerMovment : MonoBehaviour
     private bool isWallJumping;
     bool wallDetected = false;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        //EnemyScript.hitThePlayer += GotHit;
-        speed = charecterProperties.speed;
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        HandleInput();
-        HandleAnimations();
-    }
-
-    private void FixedUpdate()
-    {
-        HandleCollision();
-        HandleMovment();
-        HandleFlip();
-        
-    }
-
     public static int GetDirection()
     {
         return facingDiraction;
@@ -80,27 +54,39 @@ public class PlayerMovment : MonoBehaviour
     {
         return directionRight;
     }
-   
-   
+
+    void Start()
+    {
+        speed = charecterProperties.speed;
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+    }
+
+    void Update()
+    {
+        HandleInput();
+        HandleAnimations();
+    }
+
+    void FixedUpdate()
+    {
+        HandleCollision();
+        HandleMovment();
+        HandleFlip();
+    }
 
     private void HandleEnemySpawner()
     {
-        //Debug.Log("Enemy Spawner triggered");
         if (enemySpawn != null)
         {
             enemySpawn.Invoke();
-           // Debug.Log("Invoke Spawner");
-
         }
-
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        
         if (other.CompareTag("EnemyTrigger"))
         {
-           // Debug.Log("Player inside the trigger");
             HandleEnemySpawner();
         }
     }
@@ -116,15 +102,11 @@ public class PlayerMovment : MonoBehaviour
         {
             WallJump();
         }
-        if(Input.GetKeyDown(KeyCode.S) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.S) && isGrounded)
         {
             DodgeBack();
         }
-        
-
-
     }
-
 
     private void DodgeBack()
     {
@@ -137,22 +119,18 @@ public class PlayerMovment : MonoBehaviour
         rb.velocity = new Vector2(wallJunpForce.x * -facingDiraction, wallJunpForce.y);
         StartCoroutine(WallJumpRoutine());
     }
-    
+
     private IEnumerator dodgeRoutine()
     {
         isDodging = true;
         yield return new WaitForSeconds(dodgeDuration);
         isDodging = false;
-
     }
-
-
 
     private IEnumerator WallJumpRoutine()
     {
         isWallJumping = true;
         yield return new WaitForSeconds(wallJumpDuration);
-
         isWallJumping = false;
     }
 
@@ -183,27 +161,33 @@ public class PlayerMovment : MonoBehaviour
 
     private void HandleFlip()
     {
-        if (rb.velocity.x < 0 && directionRight || rb.velocity.x > 0 && !directionRight )
-            if(!isDodging)
+        if (rb.velocity.x < 0 && directionRight || rb.velocity.x > 0 && !directionRight)
+            if (!isDodging)
                 Flip();
-
     }
-   
+
     public void Flip()
     {
         transform.Rotate(0, 180, 0);
         directionRight = !directionRight;
         facingDiraction *= -1;
     }
+
     private void HandleAnimations()
     {
         animator.SetBool("isMoving", rb.velocity.x != 0);
         animator.SetFloat("yVelocity", rb.velocity.y);
         animator.SetBool("isGrounded", isGrounded);
-       
-
+        animator.SetBool("isDead", isDead);
     }
 
+    // State management methods
+    public void ResetPlayer()
+    {
+        hp = 100;
+        isDead = false;
+        transform.rotation = Quaternion.identity;
+        directionRight = true;
+        facingDiraction = 1;
+    }
 }
-
-   

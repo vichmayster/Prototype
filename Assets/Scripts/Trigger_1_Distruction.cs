@@ -8,7 +8,7 @@ public class Trigger_1_Distruction : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayerMovment.enemySpawn += TrigerDistruction;
+        PlayerMovement.enemySpawn += TrigerDistruction;
     }
 
     private void TrigerDistruction()
@@ -16,7 +16,6 @@ public class Trigger_1_Distruction : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Update is called once per frame
     void Update()
     {
         

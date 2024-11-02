@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb473c2af7030c4c8afed6697b2d794, type: 3}
+  m_Name: MainMenuState
+  m_EditorClassIdentifier: 
+  stateName: Main Menu
+  isCurrentState: 0
+  canMenu: 0
+  stateCanvas: {fileID: 1047861812847734861, guid: 6e4eaf95bfa2dda438143804803d2fe8, type: 3}
+  titleText: {fileID: 0}

@@ -90,7 +90,6 @@ public class LevelSystemScript : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         

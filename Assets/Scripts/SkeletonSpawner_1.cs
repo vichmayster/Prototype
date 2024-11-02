@@ -10,7 +10,7 @@ public class SkeletonSpawner_1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayerMovment.enemySpawn += HandleEnemySpawn;
+        PlayerMovement.enemySpawn += HandleEnemySpawn;
     }
 
     public void HandleEnemySpawn()

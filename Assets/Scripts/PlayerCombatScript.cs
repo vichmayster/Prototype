@@ -11,7 +11,8 @@ public class PlayerCombatScript : MonoBehaviour
     public static event PlayerAttack HitTheEnemy2;
     public static event PlayerAttack HitTheEnemy3;
 
-    int hp;
+    public int hp;
+
 
     Animator animator;
     Rigidbody2D rb;
@@ -61,7 +62,6 @@ public class PlayerCombatScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleAttacked();
         HandleInput();
         HandleAnimations();
     }
@@ -98,40 +98,40 @@ public class PlayerCombatScript : MonoBehaviour
 
     }
 
-    private void HandleAttacked()
-    {
-        if (vulnerableL && !inEnemyRange)
-        {
-            EnemyScript.hitThePlayer -= GotHit;
-            EnemyScript.hitThePlayer += GotHit;
-            inEnemyRange = true;
-            Debug.Log("subscribe");
-        }
-        else if (!vulnerableL && inEnemyRange)
-        {
-
-            EnemyScript.hitThePlayer -= GotHit;
-            inEnemyRange = false;
-            Debug.Log("unsabscribe");
-        }
-        else
-            return;
-    }
+  
 
     private void HandleCollision()
     {
-        
+        bool wasInRange = vulnerableL;
+
         if (directionRight)
             onTarget = Physics2D.Raycast(transform.position, Vector2.right, attackDistance, LayerMask.GetMask("Enemy"));
         else
             onTarget = Physics2D.Raycast(transform.position, Vector2.left, attackDistance, LayerMask.GetMask("Enemy"));
 
-        vulnerableLeft = Physics2D.Raycast(transform.position, Vector2.left, attackDistance, LayerMask.GetMask("Enemy"));
-        vulnerableRight = Physics2D.Raycast(transform.position, Vector2.right, attackDistance, LayerMask.GetMask("Enemy"));
+        float detectionDistance = attackDistance * 1.5f;
+        vulnerableLeft = Physics2D.Raycast(transform.position, Vector2.left, detectionDistance, LayerMask.GetMask("Enemy"));
+        vulnerableRight = Physics2D.Raycast(transform.position, Vector2.right, detectionDistance, LayerMask.GetMask("Enemy"));
 
         vulnerableL = vulnerableLeft || vulnerableRight;
 
-
+        // Clear state when entering/exiting range
+        if (vulnerableL && !wasInRange)
+        {
+            inEnemyRange = true;
+            GameStateManager.Instance.GoToCombat();
+            // Resubscribe to combat events
+            EnemyScript.hitThePlayer -= GotHit;
+            EnemyScript.hitThePlayer += GotHit;
+            Debug.Log("Entering Combat Range");
+        }
+        else if (!vulnerableL && wasInRange)
+        {
+            inEnemyRange = false;
+            EnemyScript.hitThePlayer -= GotHit;
+            GameStateManager.Instance.GoToPlaying();
+            Debug.Log("Exiting Combat Range");
+        }
     }
 
     private void HandleInput()
@@ -188,8 +188,8 @@ public class PlayerCombatScript : MonoBehaviour
 
     private void HandleFlip()
     {
-        facingDiraction = PlayerMovment.GetDirection();
-        directionRight = PlayerMovment.GetBoolDiraction();
+        facingDiraction = PlayerMovement.GetDirection();
+        directionRight = PlayerMovement.GetBoolDiraction();
     }
 
     private void InvokeHitTheEnemy()
@@ -218,6 +218,7 @@ public class PlayerCombatScript : MonoBehaviour
             rb.velocity = Vector2.zero;
             rb.gravityScale = 0;
             rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            GameStateManager.Instance.GoToGameOver();
             return;
         }
         Debug.Log("Player Got Hit, hp: " + hp);
