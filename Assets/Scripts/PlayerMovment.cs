@@ -8,8 +8,6 @@ using UnityEngine;
 public class PlayerMovment : MonoBehaviour
 {
     
-    public delegate void EnemySpawner();
-    public static event EnemySpawner enemySpawn;
 
     Animator animator;
     Rigidbody2D rb;
@@ -85,28 +83,6 @@ public class PlayerMovment : MonoBehaviour
     }
    
    
-
-    private void HandleEnemySpawner()
-    {
-        //Debug.Log("Enemy Spawner triggered");
-        if (enemySpawn != null)
-        {
-            enemySpawn.Invoke();
-           // Debug.Log("Invoke Spawner");
-
-        }
-
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        
-        if (other.CompareTag("EnemyTrigger"))
-        {
-           // Debug.Log("Player inside the trigger");
-            HandleEnemySpawner();
-        }
-    }
 
     private void HandleInput()
     {
