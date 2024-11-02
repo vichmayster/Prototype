@@ -12,7 +12,7 @@ public class EnemySpawner1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -21,7 +21,7 @@ public class EnemySpawner1 : MonoBehaviour
         if (other.CompareTag("Player") && !isSpawned)
         {
             isSpawned = true;
-            if(prefab!=null && EnemySpawner != null)
+            if (prefab != null && EnemySpawner != null)
             {
                 Vector3 spawnLocation = EnemySpawner.transform.position;
                 GameObject SkeletonEnemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
@@ -32,7 +32,7 @@ public class EnemySpawner1 : MonoBehaviour
                 Vector3 spawnLocation = EnemySpawner2.transform.position;
                 GameObject SkeletonEnemy = Instantiate(prefab2, spawnLocation, Quaternion.identity);
             }
-                Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
 

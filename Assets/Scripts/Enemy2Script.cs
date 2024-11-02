@@ -76,8 +76,7 @@ public class Enemy2Script : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         StartCoroutine(SwitchSide());
         HandleLevelUpdate();
-        LevelSystemScript.updateLevelEvent += HandleLevelUpdate;
-       
+        LevelSystemScript.updateLevelEvent += HandleLevelUpdate;       
 
     }
 

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6cf1e40ee509084784ce2026825d931, type: 3}
+  m_Name: PausedState
+  m_EditorClassIdentifier: 
+  stateName: Paused
+  isCurrentState: 0
+  canMenu: 1
+  stateCanvas: {fileID: 7277500525168305681, guid: 12250202f204b6740994d88c1821c871, type: 3}

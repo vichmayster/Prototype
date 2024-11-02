@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/Enemy3Script.cs.meta
+guid: 198bf04ac71e81a4db1c2a656c975980
+========
+guid: b9345712a7d721841b3c62fda7149534
+>>>>>>>> Finalbrench:Assets/Scripts/BaseState.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

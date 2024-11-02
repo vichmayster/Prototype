@@ -150,6 +150,10 @@ public class LevelSystemScript : MonoBehaviour
         UpdateLevelUI();
     }
 
+    void Update()
+    {
+        
+    }
     // Update is called once per frame
   
 }

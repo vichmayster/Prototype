@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/Enemy2Script.cs.meta
 guid: 4fa38248389fa674aa080a1c6df583bd
+========
+guid: 6ead49f5a2a566d44af9871e5b42b2cf
+>>>>>>>> Finalbrench:Assets/Scripts/CombatManager.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
