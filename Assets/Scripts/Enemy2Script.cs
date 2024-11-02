@@ -77,8 +77,6 @@ public class Enemy2Script : MonoBehaviour
         StartCoroutine(SwitchSide());
         HandleLevelUpdate();
         LevelSystemScript.updateLevelEvent += HandleLevelUpdate;
-
-        //outside source
        
 
     }
