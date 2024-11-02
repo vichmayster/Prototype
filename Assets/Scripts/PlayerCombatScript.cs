@@ -182,16 +182,16 @@ public class PlayerCombatScript : MonoBehaviour
     private void HandleInput()
     {
         
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !isAttacking)
         {
             WeaponToUse(1);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && !isAttacking)
         {
             if (isAvailbleWeapon2)
                 WeaponToUse(2);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && !isAttacking)
         {
             if (isAvailbleWeapon3)
                 WeaponToUse(3);
