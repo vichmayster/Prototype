@@ -10,11 +10,6 @@ public class GameOverStateScriptable : GameStateScriptable
         Debug.Log("Entering Game Over State");
         base.OnStateEnter();
 
-        if (stateCanvas == null)
-        {
-            stateCanvas = GameObject.Find("GameOverCanvas")?.GetComponent<Canvas>();
-        }
-
         if (stateCanvas != null)
         {
             stateCanvas.gameObject.SetActive(true);
@@ -22,19 +17,25 @@ public class GameOverStateScriptable : GameStateScriptable
         }
         else
         {
-            Debug.LogError($"{stateCanvas.name} not found!");
+            Debug.LogError("GameOver Canvas reference is missing!");
         }
+
+        if (player != null)
+        {
+            player.enabled = false; 
+        }
+
+        Time.timeScale = 0f; 
     }
 
-    public override void OnStateUpdate()
+    public override void OnStateExit()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        base.OnStateExit();
+        Time.timeScale = 1f;
+
+        if (player != null)
         {
-            GameStateManager.Instance.GoToPlaying();
-        }
-        else if (Input.GetKeyDown(KeyCode.M))
-        {
-            GameStateManager.Instance.GoToMainMenu();
+            player.enabled = true; 
         }
     }
 }

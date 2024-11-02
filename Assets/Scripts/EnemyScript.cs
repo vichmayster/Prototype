@@ -58,6 +58,9 @@ public class EnemyScript : MonoBehaviour
     [Header("ScriptableObjects")]
     [SerializeField] CharecterProperties charecterProperties;
 
+    [Header("Text Messages")]
+    [SerializeField] GameObject message;
+
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
@@ -66,12 +69,9 @@ public class EnemyScript : MonoBehaviour
         capsuleCollider = GetComponent<CapsuleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         StartCoroutine(SwitchSide());
+        HandleLevelUpdate();
+        LevelSystemScript.updateLevelEvent += HandleLevelUpdate;
 
-        //outside source
-        success_hit = LevelSystemScript.skeletonSuccessHitW1;
-        success_hit_w2 = LevelSystemScript.skeletonSuccessHitW2;
-        hit_damage = LevelSystemScript.skeletonHitDamageW1;
-        hit_damage_w2 = LevelSystemScript.skeletonHitDamageW2;
     }
     void Update()
     {
@@ -86,7 +86,83 @@ public class EnemyScript : MonoBehaviour
         HandlePlayerDetection();
         
     }
-
+    private void HandleAnimations()
+    {
+        animator.SetBool("gotHit", gotHit);
+        animator.SetBool("missed", missed);
+        animator.SetBool("dead", dead);
+        animator.SetFloat("xVelocity", rb.velocity.x);
+        animator.SetBool("attack", attack);
+    }
+    private void HandleAttack()
+    {
+        if(attack && canAttack)
+        {
+            
+        
+            StartCoroutine(Attack());
+        }
+    }
+    private void HandleMovement()
+    {
+        if(!freezed)
+        {
+             rb.velocity =new Vector2(speed * facingDirection ,rb.velocity.y);
+        }
+    }
+    private void HandleAttacked2()
+    {
+        if (Random.Range(1, 101) < success_hit_w2)
+        {
+            gotHit = true;
+            StartCoroutine(Freez(1));
+            hp -=hit_damage_w2;
+            if (hp < 1)
+            {
+                dead = true;
+                PlayerCombatScript.HitTheEnemy -= HandleAttacked;
+                InvokeLevelPoints();
+                StartCoroutine(EnemyDeath());
+            }
+        }
+        else
+        {
+            missed = true;
+            StartCoroutine(Freez(1));
+            StartCoroutine(SpawnMissedText());
+        }
+        StartCoroutine(ResetAttacked());
+    }
+    private void HandleAttacked()
+    {
+        if (Random.Range(1,101) < success_hit)
+        {
+            gotHit = true;
+            StartCoroutine(Freez(1));
+            hp -= hit_damage;
+            if (hp < 0)
+            {
+                dead = true;
+                PlayerCombatScript.HitTheEnemy -= HandleAttacked;
+                InvokeLevelPoints();
+                StartCoroutine(EnemyDeath());
+            }
+        }
+        else
+        {
+            missed = true;
+            StartCoroutine(Freez(1));
+            StartCoroutine(SpawnMissedText());
+        }
+        StartCoroutine(ResetAttacked());
+    }
+    private void HandleLevelUpdate()
+    {
+        success_hit = LevelSystemScript.skeletonSuccessHitW1;
+        success_hit_w2 = LevelSystemScript.skeletonSuccessHitW2;
+        hit_damage = LevelSystemScript.skeletonHitDamageW1;
+        hit_damage_w2 = LevelSystemScript.skeletonHitDamageW2;
+    }
     private void HandlePlayerAttack()
     {
         if (vulnerable && !inPlayersRange)
@@ -110,28 +186,6 @@ public class EnemyScript : MonoBehaviour
         else
             return;
     }
-    private void HandleAttacked()
-    {
-        if (Random.Range(1,101) < success_hit)
-        {
-            gotHit = true;
-            StartCoroutine(Freez(1));
-            hp -= hit_damage;
-            if (hp < 0)
-            {
-                dead = true;
-                PlayerCombatScript.HitTheEnemy -= HandleAttacked;
-                InvokeLevelPoints();
-                StartCoroutine(EnemyDeath());
-            }
-        }
-        else 
-            missed = true;
-            StartCoroutine(Freez(1));
-
-        StartCoroutine(ResetAttacked());
-    }
-
     private void InvokeLevelPoints()
     {
         Debug.Log("before Invoke Level Points");
@@ -141,29 +195,6 @@ public class EnemyScript : MonoBehaviour
             skeletonPoints.Invoke();
         }
     }
-
-    private void HandleAttacked2()
-    {
-        if (Random.Range(1, 101) < success_hit_w2)
-        {
-            gotHit = true;
-            StartCoroutine(Freez(1));
-            hp -=hit_damage_w2;
-            if (hp < 1)
-            {
-                dead = true;
-                PlayerCombatScript.HitTheEnemy -= HandleAttacked;
-                InvokeLevelPoints();
-                StartCoroutine(EnemyDeath());
-            }
-        }
-        else
-            missed = true;
-        StartCoroutine(Freez(1));
-
-        StartCoroutine(ResetAttacked());
-    }
-
     private void HandlePlayerDetection()
     {
         if (facingRight)
@@ -197,17 +228,6 @@ public class EnemyScript : MonoBehaviour
         vulnerableRight = Physics2D.Raycast(transform.position, Vector2.right, attackDistance, LayerMask.GetMask("Player"));
         vulnerable = vulnerableLeft || vulnerableRight;
     }
-
-    private void HandleAttack()
-    {
-        if(attack && canAttack)
-        {
-            
-        
-            StartCoroutine(Attack());
-        }
-    }
-
     private void InvokeHitThePlayer()
     {
         
@@ -219,7 +239,6 @@ public class EnemyScript : MonoBehaviour
             
         }
     }
-
     private void OnDrawGizmos()
     {
     
@@ -228,34 +247,11 @@ public class EnemyScript : MonoBehaviour
         else
             Gizmos.DrawLine(transform.position, new Vector2(transform.position.x - detectionRang, transform.position.y));
     }
-
-    private void HandleMovement()
-    {
-        if(!freezed)
-        {
-             rb.velocity =new Vector2(speed * facingDirection ,rb.velocity.y);
-        }
-    }
-
     private void HandleFreez()
     {
         rb.velocity = Vector2.zero;
     }
-
-
-
-
-
-    private void HandleAnimations()
-    {
-        animator.SetBool("gotHit", gotHit);
-        animator.SetBool("missed", missed);
-        animator.SetBool("dead", dead);
-        animator.SetFloat("xVelocity", rb.velocity.x);
-        animator.SetBool("attack", attack);
-    }
-
-   private IEnumerator Attack()
+    private IEnumerator Attack()
     {
         
         canAttack = false;
@@ -272,16 +268,12 @@ public class EnemyScript : MonoBehaviour
 
 
     }
-    
-  
-
     private IEnumerator ResetAttacked()
     {
         yield return new WaitForSeconds(resetAttackDuration);
         gotHit = false;
         missed = false;
     }
-
     private IEnumerator EnemyDeath()
     {
         if(capsuleCollider != null)
@@ -294,7 +286,6 @@ public class EnemyScript : MonoBehaviour
         yield return new WaitForSeconds(objectDestructionDuration);
         Destroy(gameObject);
     }
-
     private IEnumerator SwitchSide()
     {
         while (true)
@@ -353,9 +344,6 @@ public class EnemyScript : MonoBehaviour
            // Debug.Log("switch");
         }
     }
-
-   
-
     private IEnumerator Freez(float seconds)
     {
         freezed = true;
@@ -364,4 +352,13 @@ public class EnemyScript : MonoBehaviour
         freezed = false;
         HandleMovement();
     }
+    private IEnumerator SpawnMissedText()
+    {
+        Vector3 spawnLocation = transform.position;
+        GameObject text= Instantiate(message, spawnLocation, Quaternion.identity);
+        yield return new WaitForSeconds(3);
+        Destroy(text);
+    }
+   
+
 }

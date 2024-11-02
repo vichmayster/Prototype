@@ -7,24 +7,17 @@ using TMPro;
 public class MainMenuController : MonoBehaviour
 {
     [SerializeField] private Button playButton;
-    [SerializeField] private Button settingsButton;
     [SerializeField] private Button quitButton;
 
     private void Start()
     {
-        // Find buttons if not assigned
         if (playButton == null)
             playButton = transform.Find("MenuContainer/PlayButton")?.GetComponent<Button>();
-        if (settingsButton == null)
-            settingsButton = transform.Find("MenuContainer/SettingsButton")?.GetComponent<Button>();
         if (quitButton == null)
             quitButton = transform.Find("MenuContainer/QuitButton")?.GetComponent<Button>();
 
-        // Add listeners
         if (playButton != null)
             playButton.onClick.AddListener(HandlePlayClick);
-        if (settingsButton != null)
-            settingsButton.onClick.AddListener(HandleSettingsClick);
         if (quitButton != null)
             quitButton.onClick.AddListener(HandleQuitClick);
     }
@@ -33,11 +26,6 @@ public class MainMenuController : MonoBehaviour
     {
         if (GameStateManager.Instance != null)
             GameStateManager.Instance.GoToPlaying();
-    }
-
-    private void HandleSettingsClick()
-    {
-        Debug.Log("Settings clicked!");
     }
 
     private void HandleQuitClick()

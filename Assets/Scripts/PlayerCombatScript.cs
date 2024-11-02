@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Enemy2Script;
 
 public class PlayerCombatScript : MonoBehaviour
 {
@@ -26,6 +28,7 @@ public class PlayerCombatScript : MonoBehaviour
     bool vulnerableLeft = false;
     bool vulnerableRight = false;
     bool vulnerableL = false;
+    
 
     float input;
     int facingDiraction = 1;
@@ -40,7 +43,11 @@ public class PlayerCombatScript : MonoBehaviour
     [SerializeField] bool isAvailbleWeapon3 = true;
 
     [Header("Player's damege")]
+    [SerializeField] int counterAttackDamege = 5;
     [SerializeField] int damege = 10;
+    [SerializeField] int damege2 = 30;
+    [SerializeField] int damege3 = 15;
+
     [SerializeField] float resetGotHitDuration = 0.5f;
 
     [Header("Attack properties")]
@@ -50,13 +57,18 @@ public class PlayerCombatScript : MonoBehaviour
     [Header("ScriptableObjects")]
     [SerializeField] CharecterProperties charecterProperties;
 
+    [Header("HP Text In Game UI (HP)")]
+    [SerializeField] TextMeshProUGUI textMeshProUGUI;
+
     // Start is called before the first frame update
     void Start()
     {
         hp = charecterProperties.health;
+        handleUpdateHealthUI();
         EnemyScript.hitThePlayer += GotHit;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        
     }
 
     // Update is called once per frame
@@ -64,6 +76,11 @@ public class PlayerCombatScript : MonoBehaviour
     {
         HandleInput();
         HandleAnimations();
+    }
+
+    private void handleUpdateHealthUI()
+    {
+        textMeshProUGUI.text = "Health " + hp;
     }
 
     private void FixedUpdate()
@@ -99,6 +116,53 @@ public class PlayerCombatScript : MonoBehaviour
     }
 
   
+    private void HandleAttacked()
+    {
+        if (vulnerableL && !inEnemyRange)
+        {
+            EnemyScript.hitThePlayer -= GotHit;
+            EnemyScript.hitThePlayer += GotHit;
+            Enemy2Script.hitThePlayer -= GotHit2;
+            Enemy2Script.hitThePlayer += GotHit2;
+            Enemy2Script.counterAttackEvent -= CounterAttacked;
+            Enemy2Script.counterAttackEvent += CounterAttacked;
+            Enemy3Script.hitThePlayer -= GotHit3;
+            Enemy3Script.hitThePlayer += GotHit3;
+
+            inEnemyRange = true;
+            Debug.Log("subscribe");
+        }
+        else if (!vulnerableL && inEnemyRange)
+        {
+
+            EnemyScript.hitThePlayer -= GotHit;
+            Enemy2Script.hitThePlayer -= GotHit2;
+            Enemy2Script.counterAttackEvent -= CounterAttacked;
+            Enemy3Script.hitThePlayer -= GotHit3;
+            inEnemyRange = false;
+            Debug.Log("unsabscribe");
+        }
+        else
+            return;
+    }
+
+
+    private void CounterAttacked()
+    {
+        hp -= counterAttackDamege;
+        handleUpdateHealthUI();
+        gotHit = true;
+        if (hp < 1)
+        {
+            isDead = true;
+            rb.velocity = Vector2.zero;
+            rb.gravityScale = 0;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            return;
+        }
+        Debug.Log("Player Got Hit, hp: " + hp);
+        StartCoroutine(ResetGotHit());
+    }
 
     private void HandleCollision()
     {
@@ -137,16 +201,16 @@ public class PlayerCombatScript : MonoBehaviour
     private void HandleInput()
     {
         
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !isAttacking)
         {
             WeaponToUse(1);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && !isAttacking)
         {
             if (isAvailbleWeapon2)
                 WeaponToUse(2);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && !isAttacking)
         {
             if (isAvailbleWeapon3)
                 WeaponToUse(3);
@@ -211,6 +275,40 @@ public class PlayerCombatScript : MonoBehaviour
     void GotHit()
     {
         hp -= damege;
+        handleUpdateHealthUI();
+        gotHit = true;
+        if (hp < 1)
+        {
+            isDead = true;
+            rb.velocity = Vector2.zero;
+            rb.gravityScale = 0;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            return;
+        }
+        Debug.Log("Player Got Hit, hp: " + hp);
+        StartCoroutine(ResetGotHit());
+    }
+    private void GotHit2()
+    {
+        hp -= damege2;
+        handleUpdateHealthUI();
+        Debug.Log(damege2);
+        gotHit = true;
+        if (hp < 1)
+        {
+            isDead = true;
+            rb.velocity = Vector2.zero;
+            rb.gravityScale = 0;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            return;
+        }
+        Debug.Log("Player Got Hit, hp: " + hp);
+        StartCoroutine(ResetGotHit());
+    }
+    private void GotHit3()
+    {
+        hp -= damege3;
+        handleUpdateHealthUI(); ;
         gotHit = true;
         if (hp < 1)
         {

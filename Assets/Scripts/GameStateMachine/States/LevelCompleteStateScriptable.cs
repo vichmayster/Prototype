@@ -6,6 +6,14 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "LevelCompleteState", menuName = "Runner Game/States/Level Complete State")]
 public class LevelCompleteStateScriptable : GameStateScriptable
 {
+    private void Awake()
+    {
+        if (LevelManager.Instance == null)
+        {
+            Debug.LogError("LevelManager instance is null!");
+        }
+    }
+
     public override void OnStateEnter()
     {
         Debug.Log("Entering Level Complete State");
@@ -13,7 +21,7 @@ public class LevelCompleteStateScriptable : GameStateScriptable
 
         if (stateCanvas == null)
         {
-            stateCanvas = GameObject.Find("GameOverCanvas")?.GetComponent<Canvas>();
+            stateCanvas = GameObject.Find("LevelCompleteCanvas")?.GetComponent<Canvas>(); 
         }
 
         if (stateCanvas != null)

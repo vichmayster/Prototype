@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1684771748850229449
 RectTransform:
   m_ObjectHideFlags: 0
@@ -119,6 +119,7 @@ MonoBehaviour:
   nextLevelButton: {fileID: 7386487993051137687}
   mainMenuButton: {fileID: 7788681429519707071}
   levelCompleteText: {fileID: 0}
+  levelChannel: {fileID: 0}
 --- !u!1 &1525561689596286898
 GameObject:
   m_ObjectHideFlags: 0

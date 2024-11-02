@@ -33,7 +33,7 @@ public class PausedStateScriptable : GameStateScriptable
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Debug.Log("Escape pressed in pause state");
-            Time.timeScale = 1f;  // Make sure to restore time scale before changing state
+            Time.timeScale = 1f;
             if (player != null)
             {
                 player.enabled = true;
@@ -47,10 +47,9 @@ public class PausedStateScriptable : GameStateScriptable
         Debug.Log("Exiting Paused State");
         base.OnStateExit();
 
-        // Double-check time scale is restored
+       
         Time.timeScale = 1f;
 
-        // Re-enable player
         if (player != null)
         {
             player.enabled = true;

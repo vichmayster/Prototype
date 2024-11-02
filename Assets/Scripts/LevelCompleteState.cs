@@ -28,7 +28,6 @@ public class LevelCompleteState : BaseState
         {
             Debug.Log($"Found canvas: {levelCompleteCanvas.name}, currently active: {levelCompleteCanvas.gameObject.activeInHierarchy}");
 
-            // Enable the canvas and all its components
             levelCompleteCanvas.gameObject.SetActive(true);
             levelCompleteCanvas.enabled = true;
 
@@ -45,10 +44,8 @@ public class LevelCompleteState : BaseState
             Debug.LogError("Could not find LevelCompleteCanvas!");
         }
 
-        // Pause the game
         Time.timeScale = 0f;
 
-        // Disable player input
         if (player != null)
         {
             player.enabled = false;

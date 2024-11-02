@@ -1,17 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class LevelSystemScript : MonoBehaviour
 {
-    [SerializeField]int playerLevel = 1;
+    public delegate void UpdateLevelEvent();
+    public static event UpdateLevelEvent updateLevelEvent;
+
+    [SerializeField] int playerLevel = 1;
     [SerializeField] int level2Required = 100;
     [SerializeField] int level3Required = 200;
     int currectPointAmount = 0;
     [SerializeField] int skeletonPoints = 10;
-    [SerializeField] int musroomPoints = 20;
+    [SerializeField] int mushroomPoints = 20;
     [SerializeField] int eyePoints = 20;
+
+    [Header("HP Text In Game UI (Level)")]
+    [SerializeField] TextMeshProUGUI textMeshProUGUI;
 
     public static int skeletonSuccessHitW1;
     public static int skeletonSuccessHitW2;
@@ -42,11 +49,27 @@ public class LevelSystemScript : MonoBehaviour
     [SerializeField] PlayerLevelProperties level3;
     void Start()
     {
-        EnemyScript.skeletonPoints += AddPoints;
-        updateLevel(level1);
+        EnemyScript.skeletonPoints += AddPointsSkeleton;
+        Enemy2Script.mushroomPoints += AddPointsMushroom;
+        Enemy3Script.eyePoints += AddPontsEye;
+        UpdateLevel(level1);
+        UpdateLevelUI();
+        
     }
 
-    private void updateLevel(PlayerLevelProperties currentLevel)
+    private void UpdateLevelUI()
+    {
+        if(playerLevel == 1)
+            textMeshProUGUI.text = "Level: " + playerLevel + " Next:" + currectPointAmount + "/" + level2Required;
+        if (playerLevel == 2)
+            textMeshProUGUI.text = "Level: " + playerLevel + " Next:" + currectPointAmount + "/" + level3Required;
+        if (playerLevel == 3)
+            textMeshProUGUI.text = "Level: " + playerLevel + " Next:" + currectPointAmount + "/---";
+
+
+    }
+
+    private void UpdateLevel(PlayerLevelProperties currentLevel)
     {
          skeletonSuccessHitW1 = currentLevel.skeletonSuccessHitW1;
          skeletonSuccessHitW2 = currentLevel.skeletonSuccessHitW2;
@@ -71,27 +94,66 @@ public class LevelSystemScript : MonoBehaviour
          eyeHitDamageW1 = currentLevel.eyeHitDamageW1;
          eyeHitDamageW2 = currentLevel.eyeHitDamageW2;
          eyeHitDamageW3 = currentLevel.eyeHitDamageW3;
+
+        if (updateLevelEvent != null)
+            updateLevelEvent.Invoke();
+
     }
 
-    private void AddPoints()
+    private void AddPointsSkeleton()
     {
         currectPointAmount += skeletonPoints;
         Debug.Log("Get points");
         if (currectPointAmount >= level2Required)
         {
             playerLevel = 2;
-            updateLevel(level2);
+            UpdateLevel(level2);
         }
         else if (currectPointAmount >= level3Required)
         {
             playerLevel = 3;
-            updateLevel(level3);
+            UpdateLevel(level3);
         }
+        UpdateLevelUI();
 
+    }
+    private void AddPointsMushroom()
+    {
+        currectPointAmount += mushroomPoints;
+        Debug.Log("Get points");
+        if (currectPointAmount >= level2Required)
+        {
+            playerLevel = 2;
+            UpdateLevel(level2);
+        }
+        else if (currectPointAmount >= level3Required)
+        {
+            playerLevel = 3;
+            UpdateLevel(level3);
+        }
+        UpdateLevelUI();
+    }
+    private void AddPontsEye()
+    {
+        currectPointAmount += eyePoints;
+        Debug.Log("Get points");
+        if (currectPointAmount >= level2Required)
+        {
+            playerLevel = 2;
+            UpdateLevel(level2);
+        }
+        else if (currectPointAmount >= level3Required)
+        {
+            playerLevel = 3;
+            UpdateLevel(level3);
+        }
+        UpdateLevelUI();
     }
 
     void Update()
     {
         
     }
+    // Update is called once per frame
+  
 }

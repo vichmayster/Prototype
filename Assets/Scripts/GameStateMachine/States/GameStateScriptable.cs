@@ -11,10 +11,19 @@ public abstract class GameStateScriptable : ScriptableObject
     public bool canMenu = true;
 
     [Header("References")]
-    [SerializeField] protected Canvas stateCanvas;
+    [SerializeField] public Canvas stateCanvas; 
     protected PlayerMovement player;
     protected CameraScript camera;
     protected GameStateManager gameStateManager;
+
+    public virtual void SetCanvas(Canvas canvas) 
+    {
+        stateCanvas = canvas;
+        if (canvas == null)
+        {
+            Debug.LogWarning($"Null canvas assigned to state {name}");
+        }
+    }
 
     public virtual void Initialize(PlayerMovement playerRef, CameraScript cameraRef)
     {

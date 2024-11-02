@@ -6,14 +6,17 @@ public class PlayerMovement : MonoBehaviour
 {
     public delegate void EnemySpawner();
     public static event EnemySpawner enemySpawn;
+    
 
-    // Add death event for state management
     public event System.Action OnPlayerDeath;
 
     Animator animator;
     Rigidbody2D rb;
     float input;
     static bool directionRight = true;
+
+    float horizontalVelocity;
+    float velocityThreshold;
 
     [Header("Dodging")]
     bool isDodging = false;
@@ -66,6 +69,11 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleInput();
         HandleAnimations();
+
+        if (Input.GetKeyDown(KeyCode.K))  // 'K' for kill
+        {
+            TakeDamage(100);
+        }
     }
 
     void FixedUpdate()
@@ -91,6 +99,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
     private void HandleInput()
     {
         input = Input.GetAxisRaw("Horizontal");
@@ -106,6 +115,30 @@ public class PlayerMovement : MonoBehaviour
         {
             DodgeBack();
         }
+
+       
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return; 
+
+        hp -= damage;
+        Debug.Log($"Player took {damage} damage. HP: {hp}");
+
+        if (hp <= 0 && !isDead)
+        {
+            isDead = true;
+            Debug.Log("Player died!");
+            OnPlayerDeath?.Invoke();
+
+            enabled = false;
+
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.GoToGameOver();
+            }
+        }
     }
 
     private void DodgeBack()
@@ -119,6 +152,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(wallJunpForce.x * -facingDiraction, wallJunpForce.y);
         StartCoroutine(WallJumpRoutine());
     }
+
 
     private IEnumerator dodgeRoutine()
     {
@@ -157,6 +191,8 @@ public class PlayerMovement : MonoBehaviour
             return;
 
         rb.velocity = new Vector2(input * speed, rb.velocity.y);
+        horizontalVelocity = Mathf.Abs(rb.velocity.x);
+        velocityThreshold = 0.01f;
     }
 
     private void HandleFlip()
@@ -175,13 +211,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleAnimations()
     {
-        animator.SetBool("isMoving", rb.velocity.x != 0);
+        animator.SetBool("isMoving", horizontalVelocity > velocityThreshold);
         animator.SetFloat("yVelocity", rb.velocity.y);
         animator.SetBool("isGrounded", isGrounded);
         animator.SetBool("isDead", isDead);
     }
+    private void OnEnable()
+    {
+        EnemyScript.hitThePlayer += HandleEnemyHit;
+        Enemy2Script.hitThePlayer += HandleEnemyHit;
+        Enemy3Script.hitThePlayer += HandleEnemyHit;
+    }
 
-    // State management methods
+    private void OnDisable()
+    {
+        EnemyScript.hitThePlayer -= HandleEnemyHit;
+        Enemy2Script.hitThePlayer -= HandleEnemyHit;
+        Enemy3Script.hitThePlayer -= HandleEnemyHit;
+    }
+
+    private void HandleEnemyHit()
+    {
+        TakeDamage(10);
+    }
     public void ResetPlayer()
     {
         hp = 100;
